@@ -42,6 +42,101 @@ int calculateScore(char* word) {
   
 }
 
+void swap(Entry* a, Entry* b) {
+   
+    Entry temp = *a;
+    *a = *b;
+    *b = temp;
+   
+}
+
+void percolateDown(heapStruct* h, int index) {
+   
+    int maxIndex;
+    int leftChild;
+    int rightChild;
+    while(1) {
+       
+        maxIndex = index;
+        leftChild = 2 * index + 1;
+        rightChild = 2 * index + 2;
+
+        if(leftChild < h->size) {
+
+            if(h->heaparray[leftChild].score > h->heaparray[maxIndex].score) {
+               
+                maxIndex = leftChild;
+               
+            } else if(h->heaparray[leftChild].score == h->heaparray[maxIndex].score) {
+               
+                if(strcmp(h->heaparray[leftChild].word, h->heaparray[maxIndex].word) < 0) {
+                   
+                    maxIndex = leftChild;
+                   
+                }
+               
+            }
+           
+        }
+
+        if(rightChild < h->size) {
+
+            if(h->heaparray[rightChild].score > h->heaparray[maxIndex].score) {
+               
+                maxIndex = rightChild;
+               
+            } else if(h->heaparray[rightChild].score == h->heaparray[maxIndex].score) {
+               
+                if(strcmp(h->heaparray[rightChild].word, h->heaparray[maxIndex].word) < 0) {
+                   
+                    maxIndex = rightChild;
+                   
+                }
+               
+            }
+           
+        }
+
+        if(index != maxIndex) {
+           
+            swap(&h->heaparray[index], &h->heaparray[maxIndex]);
+            index = maxIndex;
+           
+        } else {
+           
+            break; 
+           
+        }
+       
+    }
+   
+}
+
+void heapify(heapStruct* h) {
+
+    for(int c = (h->size / 2) - 1; c >= 0; c--) {
+       
+        percolateDown(h, c);
+       
+    }
+   
+}
+
+Entry deleteMax(heapStruct* h) {
+
+    Entry maxEntry = h->heaparray[0];
+    h->heaparray[0] = h->heaparray[h->size - 1];
+    h->size--;
+
+    if(h->size > 0) {
+       
+        percolateDown(h, 0);
+       
+    }
+    return maxEntry;
+   
+}
+
 int main(void) {
 
     int numWords;
@@ -58,6 +153,8 @@ int main(void) {
         myHeap->heaparray[b].score = calculateScore(myHeap->heaparray[b].word);
       
     }
+   
+    heapify(myHeap);
 
     free(myHeap->heaparray);
     free(myHeap);
