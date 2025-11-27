@@ -193,7 +193,7 @@ int main(void) {
 
     for(int b = 0; b < numWords; b++) {
       
-        scanf("%s", myHeap->heaparray[b].word);
+        scanf("%5s", myHeap->heaparray[b].word);
         myHeap->heaparray[b].score = calculateScore(myHeap->heaparray[b].word);
       
     }
@@ -211,7 +211,7 @@ int main(void) {
        
         char guessWord[6];
         char feedback[6];
-        scanf("%s %s", guessWord, feedback);
+        scanf("%5s %5s", guessWord, feedback);
 
         int currentGuessCounts[26] = {0};
         for(int h = 0; h < 5; h++) {
