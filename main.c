@@ -42,6 +42,50 @@ int calculateScore(char* word) {
   
 }
 
+int checkCandidate(char* word, char* correctPos, int minCounts[], int cannotBeAt[][26], int seenGray[]) {
+
+    for(int d = 0; d < 5; d++) {
+
+        if(correctPos[d] != '\0' && word[d] != correctPos[d]) {
+           
+            return 0;
+           
+        }
+       
+        if(cannotBeAt[d][word[d] - 'a']) {
+           
+            return 0;
+           
+        }
+       
+    }
+
+    int wordCounts[26] = {0};
+    for(int e = 0; e < 5; e++) {
+       
+        wordCounts[word[e] - 'a']++;
+       
+    }
+
+    for(int f = 0; f < 26; f++) {
+
+        if(wordCounts[f] < minCounts[f]) {
+           
+            return 0;
+           
+        }
+
+        if(minCounts[f] == 0 && seenGray[f] && wordCounts[f] > 0) {
+           
+            return 0;
+           
+        }
+       
+    }
+    return 1;
+   
+}
+
 void swap(Entry* a, Entry* b) {
    
     Entry temp = *a;
@@ -155,6 +199,73 @@ int main(void) {
     }
    
     heapify(myHeap);
+
+    char correctPos[6] = {0};
+    int minCounts[26] = {0};
+    int cannotBeAt[5][26] = {{0}};
+    int seenGray[26] = {0};
+
+    int numGuesses;
+    scanf("%d", &numGuesses);
+    for(int g = 0; g < numGuesses; g++) {
+       
+        char guessWord[6];
+        char feedback[6];
+        scanf("%s %s", guessWord, feedback);
+
+        int currentGuessCounts[26] = {0};
+        for(int h = 0; h < 5; h++) {
+           
+            int letterIdx = guessWord[h] - 'a';
+            if(feedback[h] == 'G') {
+               
+                correctPos[h] = guessWord[h];
+                currentGuessCounts[letterIdx]++;
+               
+            } else if(feedback[h] == 'Y') {
+               
+                cannotBeAt[h][letterIdx] = 1;
+                currentGuessCounts[letterIdx]++;
+               
+            } else {
+               
+                cannotBeAt[h][letterIdx] = 1;
+                seenGray[letterIdx] = 1;
+               
+            }
+           
+        }
+
+        for(int i = 0; i < 26; i++) {
+           
+            if(currentGuessCounts[i] > minCounts[i]) {
+               
+                minCounts[i] = currentGuessCounts[i];
+               
+            }
+           
+        }
+       
+    }
+
+    int foundAny = 0;
+    while(myHeap->size > 0) {
+       
+        Entry candidate = deleteMax(myHeap);
+        if(checkCandidate(candidate.word, correctPos, minCounts, cannotBeAt, seenGray)) {
+           
+            printf("%d %s\n", candidate.score, candidate.word);
+            foundAny = 1;
+           
+        }
+       
+    }
+
+    if(!foundAny) {
+       
+        printf("No candidates found.\n");
+       
+    }
 
     free(myHeap->heaparray);
     free(myHeap);
