@@ -269,7 +269,6 @@ int main(void) {
 
     free(myHeap->heaparray);
     free(myHeap);
-
     return 0;
   
 }
